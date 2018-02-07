@@ -1,0 +1,21 @@
+* {
+	list-style: none;
+}
+
+body {
+	background-color: #ccc;
+	font-family: sans-serif;
+	color:  #666;
+	text-align: center;
+}
+
+.container {
+	margin: 0 auto;	
+	padding: 20px;
+	width: 800px;
+	background-color: #fff;
+}
+
+.list li {
+	margin-bottom: 15px;
+}
