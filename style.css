@@ -11,9 +11,13 @@ body {
 
 .container {
 	margin: 0 auto;	
-	padding: 20px;
-	width: 800px;
 	background-color: #fff;
+}
+
+.list {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
 }
 
 .list li {
