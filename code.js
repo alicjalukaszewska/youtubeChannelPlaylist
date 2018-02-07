@@ -30,7 +30,7 @@ $(document).ready(function(){
 				$.each(data.items, function(i, item){
 					const videoTitle = item.snippet.title;
 					const videoId = item.snippet.resourceId.videoId;
-					const output = `<li><iframe src="www.youtube.com/embed/${videoId}" height="${videoHeight}" width="${videoWidth}"></iframe></li>`;
+					const output = `<li><iframe src="https://www.youtube.com/embed/${videoId}" height="${videoHeight}" width="${videoWidth}"></iframe></li>`;
 					$('#results').append(output);
 				})
 			}
