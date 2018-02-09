@@ -11,6 +11,7 @@ const video = $('#video');
 let playlistId;
 let flag = false;
 let nextPage;
+let responseData;
 
 $(document).ready(function(){
 	$.get(
@@ -30,59 +31,49 @@ $(document).ready(function(){
 	);
 
 	function getVideos (playlistId, pageToken) {
-		$.get(
-			"https://www.googleapis.com/youtube/v3/playlistItems", {
-			part: 'snippet',
-			playlistId,
-			maxResults,
-			key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
+		if (pageToken) {
+			$.get(
+				"https://www.googleapis.com/youtube/v3/playlistItems", {
+				part: 'snippet',
+				pageToken,
+				playlistId,
+				maxResults,
+				key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
 
-			function (data) {	
-				if (pageToken) {
-				   data.pageToken = pageToken;
+				function (data) {
+					responseData = data;
+					useData();
 				}
-				console.log(data);
-				nextPage = data.nextPageToken;
-				prevPage = data.prevPageToken;
-				$.each(data.items, function(i, item){
+			);
+		} else {
+			$.get(
+				"https://www.googleapis.com/youtube/v3/playlistItems", {
+				part: 'snippet',
+				playlistId,
+				maxResults,
+				key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
+
+				function (data) {
+					responseData = data;
 					video.attr("data-id", data.items[0].snippet.resourceId.videoId);
-					if (!flag) {
-						const list = `<li><img data-id="${item.snippet.resourceId.videoId}" class="thumbnail" src="${item.snippet.thumbnails.default.url}"></li>`;
-						$('#results').append(list);
-					}
-					
-					searchVideo(item);
-				})
-				flag = true;
-			}
-		);
+					useData();
+					flag = true;
+				}
+			);
+		}
 	}
 
-	function getNextPage (playlistId, pageToken) {
-		$.get(
-			"https://www.googleapis.com/youtube/v3/playlistItems", {
-			part: 'snippet',
-			pageToken,
-			playlistId,
-			maxResults,
-			key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
-
-			function (data) {	
-				nextPage = data.nextPageToken;
-				prevPage = data.prevPageToken;
-				$.each(data.items, function(i, item){
-					const list = `<li><img data-id="${item.snippet.resourceId.videoId}" class="thumbnail" src="${item.snippet.thumbnails.default.url}"></li>`;
-					$('#results').append(list);
-					searchVideo(item);
-				})
-			}
-		);
+	function useData() {
+		console.log(responseData);
+		nextPage = responseData.nextPageToken;
+		prevPage = responseData.prevPageToken;
+		$('#results').empty();
+		$.each(responseData.items, function(i, item){
+			const list = `<li><img data-id="${item.snippet.resourceId.videoId}" class="thumbnail" src="${item.snippet.thumbnails.default.url}"></li>`;
+			$('#results').append(list);
+			if (video.attr('data-id') == `${item.snippet.resourceId.videoId}`) getCurrentVideo(item); 
+		})
 	}
-
-	function searchVideo (item) {
-		if (video.attr('data-id') == `${item.snippet.resourceId.videoId}`) getCurrentVideo(item); 
-	}
-
 
 	function getCurrentVideo (item) {
 		const videoId = item.snippet.resourceId.videoId;
@@ -90,7 +81,6 @@ $(document).ready(function(){
 		$('#title').html(videoTitle);
 		runVideo(videoId);
 		if (!flag) video.html(`<img data-id="${item.snippet.resourceId.videoId}" class="main-thumbnail" src="${item.snippet.thumbnails.maxres.url}">`);
-		
 	}
 
     function runVideo(videoId) {
@@ -107,23 +97,23 @@ $(document).ready(function(){
 
     function nextPage(e) {
     	e.preventDefault();
-	  	getNextPage(playlistId, nextPage);
+	  	getVideos(playlistId, nextPage);
 	}
 
     function prevPage(e) {
     	e.preventDefault();
-	  	getNextPage(playlistId, prevPage);
+	  	getVideos(playlistId, prevPage);
 	}
 
 	$('#next').click(nextPage);
 	$('#prev').click(prevPage);
 
-	$( "#results").on( "click", "img", function() {
+	$( "#results").on( "click", "img", function(e) {
+		e.preventDefault();
 		let newId = $(this).data('id');
     	video.attr("data-id", newId);
-    	console.log(newId);
-    	getVideos(playlistId);
+    	useData();
 	})
 
-	video.click(() => getVideos(playlistId));
+	video.click(useData);
 });
