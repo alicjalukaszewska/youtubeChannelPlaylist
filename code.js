@@ -37,7 +37,7 @@ $(document).ready(function(){
 				part: 'snippet',
 				pageToken,
 				playlistId,
-				maxResults,
+				maxResults: 5,
 				key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
 
 				function (data) {
@@ -64,15 +64,16 @@ $(document).ready(function(){
 	}
 
 	function useData() {
-		console.log(responseData);
 		nextPage = responseData.nextPageToken;
 		prevPage = responseData.prevPageToken;
 		$('#results').empty();
+		let thumbnails = '';
 		$.each(responseData.items, function(i, item){
 			const list = `<li><img data-id="${item.snippet.resourceId.videoId}" class="thumbnail" src="${item.snippet.thumbnails.default.url}"></li>`;
-			$('#results').append(list);
+			thumbnails += list;
 			if (video.attr('data-id') == `${item.snippet.resourceId.videoId}`) getCurrentVideo(item); 
 		})
+		$('#results').html(thumbnails);
 	}
 
 	function getCurrentVideo (item) {
@@ -95,25 +96,32 @@ $(document).ready(function(){
 		video.html(iframe);
     }
 
-    function nextPage(e) {
-    	e.preventDefault();
-	  	getVideos(playlistId, nextPage);
-	}
 
     function prevPage(e) {
     	e.preventDefault();
 	  	getVideos(playlistId, prevPage);
 	}
 
-	$('#next').click(nextPage);
-	$('#prev').click(prevPage);
+	$('#next').click(function (e){
+		e.preventDefault();
+	  	getVideos(playlistId, nextPage);
+	});
+
+	$('#prev').click(function (e){
+		e.preventDefault();
+	  	getVideos(playlistId, prevPage);
+	});
 
 	$( "#results").on( "click", "img", function(e) {
 		e.preventDefault();
 		let newId = $(this).data('id');
     	video.attr("data-id", newId);
+    	video.removeClass('youtube-player');
     	useData();
 	})
 
-	video.click(useData);
+	video.click(function(){
+		video.removeClass('youtube-player');
+		useData();
+	});
 });

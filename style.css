@@ -18,12 +18,63 @@ body {
 	width: 800px;
 }
 
+.youtube-player {
+	width: auto;	
+	position: relative;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: -webkit-inline-box;
+	display: -ms-inline-flexbox;
+	display: inline-flex;
+	overflow: hidden;
+	transition: all 0.3s;
+	-webkit-transition: all 0.3s;
+	cursor: pointer;
+}
+
+
+.youtube-player:after {
+	background-color: rgba(0, 0, 0, 0.5);
+	background-image: url("https://i.imgur.com/TxzC70f.png");
+	background-repeat: no-repeat;
+	background-position: 50% center;
+	content: '\A';		    
+	position: absolute;
+	top: 0; 
+    left:0;
+    width: 100%; 
+    height: 100%;
+	transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+}
+
+.youtube-player:hover:after, .youtube-player:focus:after {
+	background-color:  rgba(0, 0, 0, 0.2);	
+
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;	
+}
+
+.main-thumbnail {
+	cursor: pointer;
+	width: 500px;
+	height: auto;
+}
+
 .thumbnailsContainer {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: -webkit-inline-box;
 	display: -ms-inline-flexbox;
 	display: inline-flex;
+}
+
+.thumbnailsContainer button {
+	background-color: transparent;
+	border:  0;
+	color:  #666;
+	font-size: 40px;
+	cursor: pointer;
 }
 
 .list {
@@ -33,20 +84,22 @@ body {
 	-webkit-box-pack: center;
 	    -ms-flex-pack: center;
 	        justify-content: center;	
+	-webkit-box-align: center;	
+	    -ms-flex-align: center;	
+	        align-items: center;
+	 height: 75px;
+	 width: 650px;
+	 overflow: hidden;
 }
 
 .list li {
-	margin: 5px;
-}
-
-.youtube-player {
-	width: auto;
-}
-
-.main-thumbnail {
-	width: 500px;
-	height: auto;
-	cursor: pointer;
+	margin: 0 5px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
 }
 
 .thumbnail {
