@@ -4,7 +4,7 @@
 const channelId = "UChAHYPBvyaQIpjyTSdQhOMQ";
 const videoHeight = 280;
 const videoWidth = 500;
-const maxResults = 5;
+const maxResults = 6;
 
 
 const video = $('#video');
@@ -21,8 +21,6 @@ $(document).ready(function(){
 		key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
 
 		function (data) {
-
-
 			$.each(data.items, function(i, item){
 				playlistId = item.contentDetails.relatedPlaylists.uploads;
 				getVideos(playlistId);
@@ -37,7 +35,7 @@ $(document).ready(function(){
 				part: 'snippet',
 				pageToken,
 				playlistId,
-				maxResults: 5,
+				maxResults,
 				key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
 
 				function (data) {
@@ -63,9 +61,21 @@ $(document).ready(function(){
 		}
 	}
 
+	function toggleArrow () {
+		if (prevPage == undefined){
+			$('#prev').addClass('disabled');
+			$('#prev').attr("disabled", true)
+		} else {
+			$('#prev').removeClass('disabled');
+			$('#prev').attr("disabled", false)
+		}
+	}
+
 	function useData() {
 		nextPage = responseData.nextPageToken;
 		prevPage = responseData.prevPageToken;
+		toggleArrow();
+		
 		$('#results').empty();
 		let thumbnails = '';
 		$.each(responseData.items, function(i, item){
