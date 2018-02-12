@@ -7,10 +7,14 @@ const videoWidth = 500;
 const maxResults = 5;
 const moreMaxResults = 2;
 
+let thumbListWidth = $('#results').width();
+let positionX = 0;
+let clickCount = 1;
 
 const video = $('#video');
 let playlistId;
 let flag = false;
+let timer = 0;
 let nextPage;
 let responseData;
 let direction;
@@ -37,7 +41,7 @@ $(document).ready(function(){
 				part: 'snippet',
 				pageToken,
 				playlistId,
-				maxResults: moreMaxResults,
+				maxResults,
 				key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
 
 				function (data) {
@@ -74,34 +78,42 @@ $(document).ready(function(){
 	}
 
 	function moveThumbnails () {
-		let resultChildren = $('#results')[0].childNodes;
+		clearTimeout(timer);
+		timer = 0;
 		if (direction === 'right') {
-			for (let i = 0; i < moreMaxResults; i++) {
-				resultChildren[i].remove();
-			}
+			$('#results li').each(function(i){
+			  $(this).css("transform", `translateX(-${positionX}px)`);
+			});
 		} else {
-			for (let i = 0; i < moreMaxResults; i++) {
-				resultChildren[`${resultChildren.length-1}`].remove();
-				
-			} 
-			console.log(resultChildren, 'left');
+		
 		}
 	}
 
 	function loadThumbnails() {
+		let ready = false;
 		nextPage = responseData.nextPageToken;
 		prevPage = responseData.prevPageToken;
 		// toggleArrow();
+		let thumbnails = '';
+
 		$.each(responseData.items, function(i, item){
 			const list = `<li><img data-id="${item.snippet.resourceId.videoId}" class="thumbnail" src="${item.snippet.thumbnails.default.url}"></li>`;
-			if (direction === 'left') {
-				$('#results').prepend(list);
-			} else {
-				$('#results').append(list);
-			}
-		})	
+			thumbnails += list;
+		})		
+
+		if (direction === 'left') {
+			$('#results').prepend(thumbnails);
+			ready = true;
+		} else {
+			$('#results').append(thumbnails);
+			ready = true;
+		}
+
 		getCurrentVideo();
-		if (direction) moveThumbnails();
+		if (direction) {
+			moveThumbnails();
+			// timer = setTimeout(moveThumbnails, 1)
+		};
 	}
 
 	function getCurrentVideo () {
@@ -138,6 +150,8 @@ $(document).ready(function(){
 		e.preventDefault();
 		direction = 'right';
 	  	getVideos(playlistId, nextPage);
+	  	positionX = positionX + thumbListWidth;
+	  	clickCount++;
 	});
 
 	$('#prev').click(function (e){
