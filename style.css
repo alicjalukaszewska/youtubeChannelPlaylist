@@ -97,11 +97,12 @@ body {
 	    -ms-flex-align: center;	
 	        align-items: center;
 	 height: 75px;
-	 width: 600px;
-	 overflow: hidden;
+	 width: 650px;
+/* 	 overflow: hidden; */
 }
 
 .list li {
+	margin:  0 5px;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -111,7 +112,12 @@ body {
 	-webkit-box-align: center;
 	    -ms-flex-align: center;
 	        align-items: center;
+	-webkit-transition: -webkit-transform 2s ease;
+	transition: -webkit-transform 2s ease;
+	transition: transform 2s ease;
+	transition: transform 2s ease, -webkit-transform 2s ease; 
 }
+
 
 .thumbnail {
 	cursor: pointer;
