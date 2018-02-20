@@ -1,7 +1,8 @@
 
 
 /* If you don't know channel ID, use this site: http://johnnythetank.github.io/youtube-channel-name-converter/ */
-const channelId = "UChAHYPBvyaQIpjyTSdQhOMQ";
+
+const defaultChannelId = "UChAHYPBvyaQIpjyTSdQhOMQ";
 const videoHeight = 280;
 const videoWidth = 500;
 const maxResults = 5;
@@ -9,30 +10,49 @@ const moreMaxResults = 2;
 
 let thumbListWidth = $('#results').width();
 let positionX = 0;
-let clickCount = 1;
 
 const video = $('#video');
 let playlistId;
-let flag = false;
-let timer = 0;
+let afterFirstLoad = false;
+let play = false;
 let nextPage;
 let responseData;
 let direction;
 
 $(document).ready(function(){
-	$.get(
-		"https://www.googleapis.com/youtube/v3/channels", {
-		part: 'contentDetails',
-		id: channelId,
-		key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
-
-		function (data) {
-			$.each(data.items, function(i, item){
-				playlistId = item.contentDetails.relatedPlaylists.uploads;
-				getVideos(playlistId);
-			})
+	function getChannelId() {
+		let inputValue = $('#channelId').val();
+		if (inputValue !== ''){
+			channelId = inputValue;
+		} else {
+			channelId = defaultChannelId;
 		}
-	);
+		afterFirstLoad = false;
+		$('#results').empty();
+		getChannel();
+	}
+
+	$('#getChannel').on('click', getChannelId);
+	$('#channelId').click(function () {
+	   $(this).select();
+	});
+	getChannelId();
+
+	function getChannel() {
+		$.get(
+			"https://www.googleapis.com/youtube/v3/channels", {
+			part: 'contentDetails',
+			id: channelId,
+			key: 'AIzaSyBXpLUT6WzX24CqJb4rM4PKpWh7lfC3pZY'}, 
+
+			function (data) {
+				$.each(data.items, function(i, item){
+					playlistId = item.contentDetails.relatedPlaylists.uploads;
+					getVideos(playlistId);
+				})
+			}
+		);	
+	}
 
 	function getVideos (playlistId, pageToken) {
 		if (pageToken) {
@@ -61,7 +81,7 @@ $(document).ready(function(){
 					responseData = data;
 					video.attr("data-id", data.items[0].snippet.resourceId.videoId);
 					loadThumbnails();
-					flag = true;
+					afterFirstLoad = true;
 				}
 			);
 		}
@@ -77,43 +97,46 @@ $(document).ready(function(){
 		}
 	}
 
-	function moveThumbnails () {
-		clearTimeout(timer);
-		timer = 0;
-		if (direction === 'right') {
-			$('#results li').each(function(i){
-			  $(this).css("transform", `translateX(-${positionX}px)`);
-			});
-		} else {
-		
-		}
+	function removeHiddenThumbnails() {
+		// $('.thumbnail').each(function(index, thumb) {
+		// 	$.each(responseData.items, function(i, item){
+		// 		if (item.snippet.resourceId.videoId === thumb.dataset.id) {
+		// 			console.log(item.snippet.resourceId.videoId, thumb.dataset.id);
+		// 		} else {
+		// 			// $(thumb).closest('li').remove();
+		// 		}
+		// 	})
+		// })
+
 	}
 
+	function moveThumbnails(thumbnails) {
+		if (direction === 'left') {
+			$('#results').prepend(thumbnails);
+		} else {
+			$('#results').append(thumbnails);
+		}
+		$('.list').on('transitionend', removeHiddenThumbnails);
+		$('.list ul').css("transform", `translateX(-${positionX}px)`);
+
+	}
+
+
 	function loadThumbnails() {
-		let ready = false;
 		nextPage = responseData.nextPageToken;
 		prevPage = responseData.prevPageToken;
-		// toggleArrow();
+		toggleArrow();
 		let thumbnails = '';
 
 		$.each(responseData.items, function(i, item){
 			const list = `<li><img data-id="${item.snippet.resourceId.videoId}" class="thumbnail" src="${item.snippet.thumbnails.default.url}"></li>`;
 			thumbnails += list;
-		})		
-
-		if (direction === 'left') {
-			$('#results').prepend(thumbnails);
-			ready = true;
-		} else {
-			$('#results').append(thumbnails);
-			ready = true;
-		}
-
-		getCurrentVideo();
+		})
+		if (!afterFirstLoad) $('#results').append(thumbnails);	
 		if (direction) {
-			moveThumbnails();
-			// timer = setTimeout(moveThumbnails, 1)
+			moveThumbnails(thumbnails);
 		};
+		getCurrentVideo();
 	}
 
 	function getCurrentVideo () {
@@ -121,9 +144,14 @@ $(document).ready(function(){
 			if (video.attr('data-id') == `${item.snippet.resourceId.videoId}`) {
 				const videoId = item.snippet.resourceId.videoId;
 				const videoTitle = item.snippet.title;
-				$('#title').html(videoTitle);
-				runVideo(videoId);
-				if (!flag) video.html(`<img data-id="${item.snippet.resourceId.videoId}" class="main-thumbnail" src="${item.snippet.thumbnails.maxres.url}">`);
+				$('#videoTitle').html(videoTitle);
+				
+				if (play === false) {
+					video.html(`<img data-id="${item.snippet.resourceId.videoId}" class="main-thumbnail" src="${item.snippet.thumbnails.maxres.url}">`)
+				} else {
+					video.removeClass('youtube-player-preview');
+					runVideo(videoId);
+				}
 			}
 		});
 	}
@@ -141,22 +169,17 @@ $(document).ready(function(){
     }
 
 
-    function prevPage(e) {
-    	e.preventDefault();
-	  	getVideos(playlistId, prevPage);
-	}
-
 	$('#next').click(function (e){
 		e.preventDefault();
 		direction = 'right';
 	  	getVideos(playlistId, nextPage);
 	  	positionX = positionX + thumbListWidth;
-	  	clickCount++;
 	});
 
 	$('#prev').click(function (e){
 		e.preventDefault();
 		direction = 'left';
+		positionX = positionX - thumbListWidth;
 	  	getVideos(playlistId, prevPage);
 	});
 
@@ -164,12 +187,12 @@ $(document).ready(function(){
 		e.preventDefault();
 		let newId = $(this).data('id');
     	video.attr("data-id", newId);
-    	video.removeClass('youtube-player');
+    	play = true;
     	getCurrentVideo();
 	})
 
 	video.click(function(){
-		video.removeClass('youtube-player');
+		play = true;
 		getCurrentVideo();
 	});
 });

@@ -7,13 +7,21 @@
 </head>
 <body>
 	<div class="container">
-		<h1>YouTube Channel Playlist</h1>
-		<h2 id="title">Current video</h2>
-		<div id="video" data-id="" class="youtube-player"></div>
-		<div class="thumbnailsContainer">
-			<button id="prev">&#10094;</button>
-			<ul id="results" class="list"></ul>
-			<button id="next">&#10095;</button>
+		<h1>YouTube Channel Playlist Demo</h1>
+		<label for="channelId">Your YouTube Channel ID</label>
+		<input name="channelId" id="channelId" type="text">
+		<button id="getChannel">Get</button>
+		<p class="tip">If you don't know channel ID, but you have a name, use <a href="http://johnnythetank.github.io/youtube-channel-name-converter" target="_blank">Youtube Channel Name Coverter</a></p>
+		<div class="youtube-channel-player">
+			<h2 id="videoTitle">Current video</h2>
+			<div id="video" data-id="" class="youtube-player-preview"></div>
+			<div class="otherVideosThumbnails">
+				<button id="prev">&#10094;</button>
+				<div class="list">
+					<ul id="results"></ul>
+				</div>
+				<button id="next">&#10095;</button>
+			</div>
 		</div>
 	</div>
 	<script src="jquery-3.3.1.min.js"></script>

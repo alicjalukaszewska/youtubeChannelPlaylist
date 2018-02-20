@@ -18,7 +18,34 @@ body {
 	width: 800px;
 }
 
-.youtube-player {
+h1 {
+	margin-bottom: 20px;
+}
+
+.container input {
+	padding: 5px 10px;
+}
+
+.container button {
+	padding: 5px 10px;
+	border: 1px solid #7C7C7C;
+	border-radius: 3px;
+}
+
+.container button:hover, .container button:focus {
+	background-color: #D8D8D8;
+}
+
+.tip {
+	padding-top: 5px;
+	font-size: 14px;
+}
+
+.youtube-channel-player {
+	margin-top: 20px;
+}
+
+.youtube-player-preview {
 	width: auto;
 	height: 100%;	
 	position: relative;
@@ -34,7 +61,7 @@ body {
 }
 
 
-.youtube-player:after {
+.youtube-player-preview:after {
 	background-color: rgba(0, 0, 0, 0.5);
 	background-image: url("https://i.imgur.com/TxzC70f.png");
 	background-repeat: no-repeat;
@@ -61,7 +88,8 @@ body {
 	height: 100%;
 }
 
-.thumbnailsContainer {
+.otherVideosThumbnails {
+	margin-top: 10px;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: -webkit-inline-box;
@@ -69,21 +97,30 @@ body {
 	display: inline-flex;
 }
 
-.thumbnailsContainer button {
-	padding: 10px;
+.otherVideosThumbnails button {
+	margin: 0 10px;
+	height: 75px;
 	background-color: transparent;
 	border:  0;
 	color:  #666;
 	font-size: 40px;
 	cursor: pointer;
+	z-index: 99;
 }
 
-.thumbnailsContainer button.disabled {
+.otherVideosThumbnails button.disabled {
 	opacity: 0;
 	cursor: auto;
 }
 
 .list {
+	 height: 75px;
+	 width: 650px;
+	 overflow: hidden;
+}
+
+ul {
+	height: inherit;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -92,10 +129,11 @@ body {
 	                justify-content: flex-start;	
 	-webkit-box-align: center;	
 	    -ms-flex-align: center;	
-	        align-items: center;
-	 height: 75px;
-	 width: 650px;
-	 overflow: hidden;
+	        align-items: center;	
+	-webkit-transition: -webkit-transform 1.5s ease;
+	transition: -webkit-transform 1.5s ease;
+	transition: transform 1.5s ease;
+	transition: transform 1.5s ease, -webkit-transform 1.5s ease; 
 }
 
 .list li {
@@ -109,10 +147,6 @@ body {
 	-webkit-box-align: center;
 	    -ms-flex-align: center;
 	        align-items: center;
-	-webkit-transition: -webkit-transform 2s ease;
-	transition: -webkit-transform 2s ease;
-	transition: transform 2s ease;
-	transition: transform 2s ease, -webkit-transform 2s ease; 
 }
 
 
